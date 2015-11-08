@@ -1,0 +1,84 @@
+function deflection(A,F_1,B,F_2)
+% A is the distance between first spring and V-belt(m)
+%F_1 is the first spring force with direction(up is positive)(N)
+% B is the distance between second spring and V-belt(m)
+%F_2 is the second spring force with direction(up is positive)(N)
+
+
+
+
+close all
+clc
+
+E=200*10^9;% young's modulus in pa
+r=0.1; %radius of shaft
+I=0.25*pi*r^4; %second moment of inertia
+L=0.4; %Length of shaft
+x=linspace(0,L,10000);
+n1=round(10000*(A/L));
+n2=round(10000*(B/L));
+Y_1_1=(F_1.*x(1:n1).^2./(6*E*I)).*(x(1:n1)-3*A);% use the module from testbook A-9-2 page 1021
+Y_1_2=(F_1*A.^2/(6*E*I)).*(A-3.*x(n1+1:10000));
+
+Y_2_1=(F_2.*x(1:n2).^2./(6*E*I)).*(x(1:n2)-3*B);
+Y_2_2=(F_2*B.^2/(6*E*I)).*(B-3.*x(n2+1:10000));
+ assignin('base','Y_1_1',Y_1_1);
+ assignin('base','Y_1_2',Y_1_2);
+ assignin('base','Y_2_1',Y_2_1);
+ assignin('base','Y_2_2',Y_2_2);
+Y_1=[Y_1_1 Y_1_2];
+Y_2=[Y_2_1 Y_2_2];
+Y=Y_1+Y_2;
+plot(x,Y_1);
+title('F1');
+figure
+plot(x,Y_2);
+title('F2');
+figure
+plot(x,Y);
+title('combine');
+%function on the beam, when x<A
+slope1=zeros(1,1000);
+syms x f1(x) f2(x) f3(x) 
+ FY_1=(F_1.*(x).^2./(6*E*I)).*((x)-3*A)+(F_2.*(x).^2./(6*E*I)).*((x)-3*B)
+ f1(x)=diff(FY_1,x)
+ 
+ n3=round(1000*(A/L))
+  for k=1:n3
+      
+     i= k*L/1000;
+     slope(1,k)=double(f1(i));
+%  diff(FY_1,i)
+%  
+  end
+%when A<x<B
+FY_2=(F_1*A.^2/(6*E*I)).*(A-3.*x)+(F_2.*x.^2./(6*E*I)).*(x-3*B)
+
+f2(x)=diff(FY_2,x)
+n4=round(1000*(B/L))
+for k=(n3+1):n4
+      
+     i= k*L/1000;
+     slope(1,k)=double(f2(i));
+%  diff(FY_1,i)
+%  
+end
+%when x>B
+FY_3=(F_1*A.^2/(6*E*I)).*(A-3.*x)+(F_2*B.^2/(6*E*I)).*(B-3.*x)
+f3(x)=diff(FY_3,x)
+for k=(n4+1):1000
+      
+     i= k*L/1000;
+     slope(1,k)=double(f3(i));
+%  diff(FY_1,i)
+%  
+  end
+
+  l=linspace(0,L,1000);
+assignin('base','slope',slope);
+figure
+plot(l,slope)
+title('slope');
+
+
+end
