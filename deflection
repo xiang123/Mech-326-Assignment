@@ -29,12 +29,12 @@ Y_2_2=(F_2*B.^2/(6*E*I)).*(B-3.*x(n2+1:10000));
 Y_1=[Y_1_1 Y_1_2];
 Y_2=[Y_2_1 Y_2_2];
 Y=Y_1+Y_2;
-plot(x,Y_1);
-title('F1');
-figure
-plot(x,Y_2);
-title('F2');
-figure
+% plot(x,Y_1);
+% title('F1');
+% figure
+% plot(x,Y_2);
+% title('F2');
+% figure
 plot(x,Y);
 title('combine');
 %function on the beam, when x<A
